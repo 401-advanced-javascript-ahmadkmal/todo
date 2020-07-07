@@ -22,8 +22,9 @@ function TodoForm (props){
  
     return (
       <Card style={{ width: '25rem' }}>
-  <Card.Header  pg='light' as="h3">Add Item</Card.Header>
-  <Card.Body>
+ 
+  <Card.Body> 
+    <Card.Title  as="h3">Add Item</Card.Title>
   <Form onSubmit={handleSubmit} >
       
     <Form.Group controlId="formBasicEmail">

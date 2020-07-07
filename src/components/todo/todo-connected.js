@@ -4,7 +4,7 @@ import TodoList from './list.js';
 import Navbar from 'react-bootstrap/Navbar';
 import './todo.scss';
 
-const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
+const todoAPI = 'https://todo-app-server-lab32.herokuapp.com/api/v1/todo';
 
 
 const ToDo = () => {
@@ -51,14 +51,40 @@ const ToDo = () => {
         .catch(console.error);
     }
   };
+  const _deleteItem = id =>{
+    let item = list.filter(i => i._id === id)[0] || {};
 
+    if (item._id) {
+    let url = `${todoAPI}/${id}`;
+
+    fetch(url, {
+      method: 'delete',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(savedItem => {
+        let list1 = list.filter(item => item._id != id)
+        console.log('id = >' ,id , 'filter =',list1)
+
+        setList(list1);
+      })
+      .catch(console.error);
+    }
+  }
+  
   const _getTodoItems = () => {
     fetch(todoAPI, {
       method: 'get',
       mode: 'cors',
     })
       .then(data => data.json())
-      .then(data => setList(data.results))
+      .then(data => {
+        console.log('data = >',data);
+        setList(data);
+        
+      })
       .catch(console.error);
   };
 
@@ -72,6 +98,7 @@ const ToDo = () => {
         </h2> */}
         <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">
+            {console.log('list ----->',list)}
             There are {list.filter(item => !item.complete).length} Items To Complete
     </Navbar.Brand>
         </Navbar>
@@ -87,6 +114,7 @@ const ToDo = () => {
           <TodoList
             list={list}
             handleComplete={_toggleComplete}
+            handleDelete={_deleteItem}
           />
         </div>
       </section>
