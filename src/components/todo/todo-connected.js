@@ -3,28 +3,18 @@ import TodoForm from './form.js';
 import TodoList from './list.js';
 import Navbar from 'react-bootstrap/Navbar';
 import './todo.scss';
-
+import useAjax from '../hooks/ajax.js';
 const todoAPI = 'https://todo-app-server-lab32.herokuapp.com/api/v1/todo';
 
 
 const ToDo = () => {
 
   const [list, setList] = useState([]);
+  const [getElement, postElement, putElement, deleteElement] = useAjax(list,setList);
 
   const _addItem = (item) => {
     item.due = new Date();
-    fetch(todoAPI, {
-      method: 'post',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item)
-    })
-      .then(response => response.json())
-      .then(savedItem => {
-        setList([...list, savedItem])
-      })
-      .catch(console.error);
+    postElement(todoAPI,item);
   };
 
   const _toggleComplete = id => {
@@ -36,19 +26,7 @@ const ToDo = () => {
       item.complete = !item.complete;
 
       let url = `${todoAPI}/${id}`;
-
-      fetch(url, {
-        method: 'put',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      })
-        .then(response => response.json())
-        .then(savedItem => {
-          setList(list.map(listItem => listItem._id === item._id ? savedItem : listItem));
-        })
-        .catch(console.error);
+      putElement(url,item);
     }
   };
   const _deleteItem = id =>{
@@ -56,36 +34,12 @@ const ToDo = () => {
 
     if (item._id) {
     let url = `${todoAPI}/${id}`;
-
-    fetch(url, {
-      method: 'delete',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(response => response.json())
-      .then(savedItem => {
-        let list1 = list.filter(item => item._id != id)
-        console.log('id = >' ,id , 'filter =',list1)
-
-        setList(list1);
-      })
-      .catch(console.error);
-    }
+    deleteElement(url,id);
   }
+}
   
   const _getTodoItems = () => {
-    fetch(todoAPI, {
-      method: 'get',
-      mode: 'cors',
-    })
-      .then(data => data.json())
-      .then(data => {
-        console.log('data = >',data);
-        setList(data);
-        
-      })
-      .catch(console.error);
+    getElement(todoAPI);
   };
 
   useEffect(_getTodoItems, []);
