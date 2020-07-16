@@ -35,7 +35,7 @@ const useAjax = (list,callback) => {
     axios.delete(url)
       .then(savedItem => {
         callback([]);
-        callback(list.filter(item => item._id != id));
+        callback(list.filter(item => item._id !== id));
       })
   };
 

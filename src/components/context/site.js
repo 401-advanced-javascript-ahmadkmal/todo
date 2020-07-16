@@ -4,7 +4,7 @@ export const SettingsContext = React.createContext();
 
 function SettingsProvider(props) {
 
-  const [listNum, setListNum] = useState(3);
+  const [listNum] = useState(3);
   const [sort, setSort] = useState('difficulty');
   const [show, setShow] = useState(false);
   

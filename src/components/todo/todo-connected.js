@@ -74,8 +74,8 @@ const ToDo = () => {
             handleDelete={_deleteItem}
           />
           <div className='ml-5'>
-          <button type="button" className= {page==1&&list.filter(i => siteContext.show?true:!i.complete ).length>=siteContext.listNum?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'}  onClick={()=>{setPage(page-1)}}>previous</button>
-          <button type="button" className= {Math.ceil(list.filter(i => siteContext.show?true:!i.complete ).length/siteContext.listNum)==page?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'} onClick={()=>{setPage(page+1)}}>next</button>
+          <button type="button" className= {page===1&&list.filter(i => siteContext.show?true:!i.complete ).length>=siteContext.listNum?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'}  onClick={()=>{setPage(page-1)}}>previous</button>
+          <button type="button" className= {Math.ceil(list.filter(i => siteContext.show?true:!i.complete ).length/siteContext.listNum)===page?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'} onClick={()=>{setPage(page+1)}}>next</button>
           </div>
         </div>
       </section>
