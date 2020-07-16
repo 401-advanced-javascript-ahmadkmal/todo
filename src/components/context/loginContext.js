@@ -31,7 +31,7 @@ class LoginProvider extends React.Component {
                 this.validateToken(res.token);
                 }).catch(e => {
                     console.log('ERROR SIGNUP');
-                    console.error
+                    console.error();
                 });
            
         
@@ -48,10 +48,11 @@ class LoginProvider extends React.Component {
           };
       
           axios.post(`${API}/signin`, {}, options).then(res => {
-            this.validateToken(res.token);
+              console.log('res--->',res)
+            this.validateToken(res.data.token);
             }).catch(e => {
                 console.log('ERROR SIGNUP');
-                console.error
+                console.error();
             });
        
     }
@@ -63,6 +64,7 @@ class LoginProvider extends React.Component {
     validateToken = token => {
 
         try {
+            console.log('token--->',token);
             let user = jwt.verify(token, 'supersecret');
             this.setLoginState(true, token, user);
 
