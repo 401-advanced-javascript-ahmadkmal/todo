@@ -1,30 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import TodoForm from './form.js';
 import TodoList from './list.js';
 import Navbar from 'react-bootstrap/Navbar';
 import './todo.scss';
-
-const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
+import useAjax from '../hooks/ajax.js';
+import { SettingsContext } from '../context/site';
+const todoAPI = 'https://todo-app-server-lab32.herokuapp.com/api/v1/todo';
 
 
 const ToDo = () => {
-
+  const siteContext = useContext(SettingsContext);
   const [list, setList] = useState([]);
+  const [page, setPage] = useState(1);
+  const [getElement, postElement, putElement, deleteElement] = useAjax(list,setList);
 
   const _addItem = (item) => {
     item.due = new Date();
-    fetch(todoAPI, {
-      method: 'post',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item)
-    })
-      .then(response => response.json())
-      .then(savedItem => {
-        setList([...list, savedItem])
-      })
-      .catch(console.error);
+    postElement(todoAPI,item);
   };
 
   const _toggleComplete = id => {
@@ -36,32 +28,22 @@ const ToDo = () => {
       item.complete = !item.complete;
 
       let url = `${todoAPI}/${id}`;
-
-      fetch(url, {
-        method: 'put',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      })
-        .then(response => response.json())
-        .then(savedItem => {
-          setList(list.map(listItem => listItem._id === item._id ? savedItem : listItem));
-        })
-        .catch(console.error);
+      putElement(url,item);
     }
   };
+  const _deleteItem = id =>{
+    let item = list.filter(i => i._id === id)[0] || {};
 
+    if (item._id) {
+    let url = `${todoAPI}/${id}`;
+    deleteElement(url,id);
+  }
+}
+  
   const _getTodoItems = () => {
-    fetch(todoAPI, {
-      method: 'get',
-      mode: 'cors',
-    })
-      .then(data => data.json())
-      .then(data => setList(data.results))
-      .catch(console.error);
+    getElement(todoAPI);
   };
-
+  
   useEffect(_getTodoItems, []);
 
   return (
@@ -72,7 +54,8 @@ const ToDo = () => {
         </h2> */}
         <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">
-            There are {list.filter(item => !item.complete).length} Items To Complete
+            {console.log('list ----->',list)}
+            There are {list.filter(item => item.complete?!item.complete:false).length} Items To Complete
     </Navbar.Brand>
         </Navbar>
       </header>
@@ -86,8 +69,14 @@ const ToDo = () => {
         <div>
           <TodoList
             list={list}
+            page={page}
             handleComplete={_toggleComplete}
+            handleDelete={_deleteItem}
           />
+          <div className='ml-5'>
+          <button type="button" className= {page===1&&list.filter(i => siteContext.show?true:!i.complete ).length>=siteContext.listNum?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'}  onClick={()=>{setPage(page-1)}}>previous</button>
+          <button type="button" className= {Math.ceil(list.filter(i => siteContext.show?true:!i.complete ).length/siteContext.listNum)===page?'d-none btn btn-secondary mr-2':' btn btn-secondary mr-2'} onClick={()=>{setPage(page+1)}}>next</button>
+          </div>
         </div>
       </section>
     </>
